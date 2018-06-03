@@ -96,6 +96,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
     private int x_init_cord, y_init_cord, x_init_margin, y_init_margin;
 
     private AdView mAdView, mAdView2;
+    private AdRequest adRequest;
 
     //Variable to check if the Floating widget view is on left side or in right side
     // initially we are displaying Floating widget view to Left side so set it to true
@@ -267,8 +268,9 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         MobileAds.initialize(this, "ca-app-pub-3020409708740492~7285509299");
         mAdView = expandedView.findViewById(R.id.adView);
         mAdView2 = infoView.findViewById(R.id.adView2);
-        AdRequest adRequest = new AdRequest.Builder().build();
+        adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
+        adRequest = new AdRequest.Builder().build();
         mAdView2.loadAd(adRequest);
     }
 
@@ -454,11 +456,15 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
                 expandedView.setVisibility(View.GONE);
                 infoView.setVisibility(View.VISIBLE);
                 setCharacterInfo();
+                adRequest = new AdRequest.Builder().build();
+                mAdView2.loadAd(adRequest);
                 break;
 
             case R.id.close_content_view:
                 infoView.setVisibility(View.GONE);
                 expandedView.setVisibility(View.VISIBLE);
+                adRequest = new AdRequest.Builder().build();
+                mAdView.loadAd(adRequest);
         }
     }
 

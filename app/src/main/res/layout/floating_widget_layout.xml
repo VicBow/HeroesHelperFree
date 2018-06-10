@@ -224,69 +224,67 @@
             android:weightSum="1">
 
 
+            <!--  ImageView to Close Content View  -->
+            <ImageView
+                android:id="@+id/close_content_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:contentDescription="@string/closeWindowDesc"
+                android:src="@drawable/ic_black_left_arrow" />
+
+
+            <TextView
+                android:id="@+id/character_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@android:color/black"
+                android:textSize="28sp" />
+
+
+            <!--
+                                <ImageView
+                                    android:id="@+id/build_view"
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_below="@+id/close_content_view"
+                                    android:src="@drawable/weapon" /> -->
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:baselineAligned="false"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:weightSum="1">
 
-                <!-- Name, rating, equipment, and level portion, to left of arrow-->
-                <LinearLayout
+                <TextView
+                    android:id="@+id/character_rating"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight=".9"
-                    android:orientation="vertical"
-                    android:weightSum="1">
+                    android:layout_weight=".333"
+                    android:gravity="start"
+                    android:textColor="@android:color/black"
+                    android:textSize="15sp" />
 
-
-                    <TextView
-                        android:id="@+id/character_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:textColor="@android:color/black"
-                        android:textSize="28sp" />
-
-
-                    <TextView
-                        android:id="@+id/character_rating"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:textColor="@android:color/black"
-                        android:textSize="15sp" />
-
-                    <TextView
-                        android:id="@+id/character_equipped"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:textColor="@android:color/black"
-                        android:textSize="15sp" />
-
-                    <TextView
-                        android:id="@+id/character_level"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:textColor="@android:color/black"
-                        android:textSize="15sp" />
-                </LinearLayout>
-
-                <RelativeLayout
+                <TextView
+                    android:id="@+id/character_equipped"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight=".15">
-                    <!--  ImageView to Close Content View  -->
-                    <ImageView
-                        android:id="@+id/close_content_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:contentDescription="@string/closeWindowDesc"
-                        android:src="@drawable/ic_black_left_arrow" />
-                </RelativeLayout>
+                    android:layout_weight=".333"
+                    android:gravity="center"
+                    android:textColor="@android:color/black"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/character_level"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".333"
+                    android:gravity="right"
+                    android:textColor="@android:color/black"
+                    android:textSize="15sp" />
             </LinearLayout>
+
 
             <TableLayout
                 android:id="@+id/main_table"
@@ -295,6 +293,10 @@
                 android:paddingEnd="5dp"
                 android:paddingStart="5dp">
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="@color/text_color2" />
 
                 <!--Row one of titles-->
                 <TableRow>
@@ -443,7 +445,20 @@
                         android:gravity="center"
                         android:textColor="@color/hi_stat" />
                 </TableRow>
-                <!--Row 5 of Recommended IV's -->
+
+                <!--Row 5 -->
+                <TableRow>
+
+                    <TextView
+                        android:layout_span="5"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/recommended"
+                        android:textColor="@android:color/black" />
+
+                </TableRow>
+
+                <!--Row 6 of Recommended IV's -->
                 <TableRow>
 
                     <TextView />

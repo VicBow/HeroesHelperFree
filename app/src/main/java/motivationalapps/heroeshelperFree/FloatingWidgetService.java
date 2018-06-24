@@ -3,6 +3,7 @@ package motivationalapps.heroeshelperFree;
 import android.annotation.TargetApi;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
@@ -11,6 +12,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -97,6 +99,9 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
 
     private AdView mAdView, mAdView2;
     private AdRequest adRequest;
+    Boolean theme;
+    int spinnerNum;
+    SharedPreferences sharedPref;
 
     //Variable to check if the Floating widget view is on left side or in right side
     // initially we are displaying Floating widget view to Left side so set it to true
@@ -113,6 +118,10 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
 
     @Override
     public void onCreate() {
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        theme = sharedPref.getBoolean(SettingsActivity.KEY_PREF_THEME, false);
+        if (!theme) spinnerNum = R.layout.spinner_item;
+        else spinnerNum = R.layout.spinner_item_dark;
         super.onCreate();
 
 
@@ -453,6 +462,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
                 break;
             */
             case R.id.info_button:
+                setColorScheme();
                 expandedView.setVisibility(View.GONE);
                 infoView.setVisibility(View.VISIBLE);
                 setCharacterInfo();
@@ -461,6 +471,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
                 break;
 
             case R.id.close_content_view:
+                setColorScheme();
                 infoView.setVisibility(View.GONE);
                 expandedView.setVisibility(View.VISIBLE);
                 adRequest = new AdRequest.Builder().build();
@@ -597,22 +608,22 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
 
             //Rating Star Spinner
             ratingSpinner = expandedView.findViewById(R.id.rating_spinner);
-            ratingAdapter = ArrayAdapter.createFromResource(this, R.array.rating_stars, R.layout.spinner_item);
+            ratingAdapter = ArrayAdapter.createFromResource(this, R.array.rating_stars, spinnerNum);
             ratingSpinner.setAdapter(ratingAdapter);
 
             //Weapon equipped Spinner
             weaponSpinner = expandedView.findViewById(R.id.weapon_spinner);
-            weaponAdapter = ArrayAdapter.createFromResource(this, R.array.weapons, R.layout.spinner_item);
+            weaponAdapter = ArrayAdapter.createFromResource(this, R.array.weapons, spinnerNum);
             weaponSpinner.setAdapter(weaponAdapter);
 
             //Color Spinner
             colorSpinner = expandedView.findViewById(R.id.color_spinner);
-            colorAdapter = ArrayAdapter.createFromResource(this, R.array.colors, R.layout.spinner_item);
+            colorAdapter = ArrayAdapter.createFromResource(this, R.array.colors, spinnerNum);
             colorSpinner.setAdapter(colorAdapter);
 
             //Hero Spinner
             heroSpinner = expandedView.findViewById(R.id.name_spinner);
-            heroAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, fiveStarBlueList);
+            heroAdapter = new ArrayAdapter<>(this,spinnerNum, fiveStarBlueList);
             heroSpinner.setAdapter(heroAdapter);
         }
 
@@ -706,50 +717,55 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         if (rating == 5) {
             switch (color) {
                 case "blue":
-                    heroAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, fiveStarBlueList);
+                    heroAdapter = new ArrayAdapter<>(this, spinnerNum, fiveStarBlueList);
                     break;
                 case "colorless":
-                    heroAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, fiveStarColorlessList);
+                    heroAdapter = new ArrayAdapter<>(this, spinnerNum, fiveStarColorlessList);
                     break;
                 case "green":
-                    heroAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, fiveStarGreenList);
+                    heroAdapter = new ArrayAdapter<>(this, spinnerNum, fiveStarGreenList);
                     break;
                 case "red":
-                    heroAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, fiveStarRedList);
+                    heroAdapter = new ArrayAdapter<>(this, spinnerNum, fiveStarRedList);
             }
         } else if (rating == 4) {
             switch (color) {
                 case "blue":
-                    heroAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, fourStarBlueList);
+                    heroAdapter = new ArrayAdapter<>(this, spinnerNum, fourStarBlueList);
                     break;
                 case "colorless":
-                    heroAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, fourStarColorlessList);
+                    heroAdapter = new ArrayAdapter<>(this, spinnerNum, fourStarColorlessList);
                     break;
                 case "green":
-                    heroAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, fourStarGreenList);
+                    heroAdapter = new ArrayAdapter<>(this, spinnerNum, fourStarGreenList);
                     break;
                 case "red":
-                    heroAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, fourStarRedList);
+                    heroAdapter = new ArrayAdapter<>(this, spinnerNum, fourStarRedList);
             }
         } else {
             switch (color) {
                 case "blue":
-                    heroAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, threeStarBlueList);
+                    heroAdapter = new ArrayAdapter<>(this, spinnerNum, threeStarBlueList);
                     break;
                 case "colorless":
-                    heroAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, threeStarColorlessList);
+                    heroAdapter = new ArrayAdapter<>(this, spinnerNum, threeStarColorlessList);
                     break;
                 case "green":
-                    heroAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, threeStarGreenList);
+                    heroAdapter = new ArrayAdapter<>(this, spinnerNum, threeStarGreenList);
                     break;
                 case "red":
-                    heroAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, threeStarRedList);
+                    heroAdapter = new ArrayAdapter<>(this, spinnerNum, threeStarRedList);
             }
         }
         heroSpinner.setAdapter(heroAdapter);
     }
 
     private void setCharacterStats() {
+        int positiveImage;
+        if (!theme) positiveImage = R.drawable.ic_outline_add_circle_24px;
+        else positiveImage = R.drawable.ic_outline_add_circle_24px_dark;
+        int diff;
+        String newValue;
         String[] character = fiveHeroesList.get(index); //Default to to five star heroes
         switch (rating) {
             case 5:
@@ -772,7 +788,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         //Set HP bane/boon
         switch(character[41]) {
             case "boon":
-                hpRec.setImageResource(R.drawable.ic_outline_add_circle_24px);
+                hpRec.setImageResource(positiveImage);
                 break;
             case "bane":
                 hpRec.setImageResource(R.drawable.ic_outline_remove_circle_24px);
@@ -783,7 +799,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         //Set ATK bane/boon
         switch(character[42]) {
             case "boon":
-                atkRec.setImageResource(R.drawable.ic_outline_add_circle_24px);
+                atkRec.setImageResource(positiveImage);
                 break;
             case "bane":
                 atkRec.setImageResource(R.drawable.ic_outline_remove_circle_24px);
@@ -795,7 +811,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         //Set SPD bane/boon
         switch(character[43]) {
             case "boon":
-                spdRec.setImageResource(R.drawable.ic_outline_add_circle_24px);
+                spdRec.setImageResource(positiveImage);
                 break;
             case "bane":
                 spdRec.setImageResource(R.drawable.ic_outline_remove_circle_24px);
@@ -807,7 +823,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         //Set DEF bane/boon
         switch(character[44]) {
             case "boon":
-                defRec.setImageResource(R.drawable.ic_outline_add_circle_24px);
+                defRec.setImageResource(positiveImage);
                 break;
             case "bane":
                 defRec.setImageResource(R.drawable.ic_outline_remove_circle_24px);
@@ -819,7 +835,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         //Set RES bane/boon
         switch(character[45]) {
             case "boon":
-                resRec.setImageResource(R.drawable.ic_outline_add_circle_24px);
+                resRec.setImageResource(positiveImage);
                 break;
             case "bane":
                 resRec.setImageResource(R.drawable.ic_outline_remove_circle_24px);
@@ -863,214 +879,222 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         } else if (isEquipped && levelSelected == 1) {
             //First have to change the values based on weapon equipped 35-39
             //If stats are n/a they need to be skipped, otherwise do them all
-            if (character[5].equals("n/a")) {
-                int diff = Integer.parseInt(character[10]) + Integer.parseInt(character[35]);
-                String newValue = String.valueOf(diff);
-                hpMid.setText(newValue);
-                hpLow.setText(character[5]);
-                hpHi.setText(character[15]);
+            switch (character[5]) {
+                case "n/a":
+                    diff = Integer.parseInt(character[10]) + Integer.parseInt(character[35]);
+                    newValue = String.valueOf(diff);
+                    hpMid.setText(newValue);
+                    hpLow.setText(character[5]);
+                    hpHi.setText(character[15]);
 
-                diff = Integer.parseInt(character[11]) + Integer.parseInt(character[36]);
-                newValue = String.valueOf(diff);
-                atkMid.setText(newValue);
-                atkLow.setText(character[6]);
-                atkHi.setText(character[16]);
+                    diff = Integer.parseInt(character[11]) + Integer.parseInt(character[36]);
+                    newValue = String.valueOf(diff);
+                    atkMid.setText(newValue);
+                    atkLow.setText(character[6]);
+                    atkHi.setText(character[16]);
 
-                diff = Integer.parseInt(character[12]) + Integer.parseInt(character[37]);
-                newValue = String.valueOf(diff);
-                spdMid.setText(newValue);
-                spdLow.setText(character[7]);
-                spdHi.setText(character[17]);
+                    diff = Integer.parseInt(character[12]) + Integer.parseInt(character[37]);
+                    newValue = String.valueOf(diff);
+                    spdMid.setText(newValue);
+                    spdLow.setText(character[7]);
+                    spdHi.setText(character[17]);
 
-                diff = Integer.parseInt(character[13]) + Integer.parseInt(character[38]);
-                newValue = String.valueOf(diff);
-                defLow.setText(character[8]);
-                defMid.setText(newValue);
-                defHi.setText(character[18]);
+                    diff = Integer.parseInt(character[13]) + Integer.parseInt(character[38]);
+                    newValue = String.valueOf(diff);
+                    defLow.setText(character[8]);
+                    defMid.setText(newValue);
+                    defHi.setText(character[18]);
 
-                diff = Integer.parseInt(character[14]) + Integer.parseInt(character[39]);
-                newValue = String.valueOf(diff);
-                resMid.setText(newValue);
-                resLow.setText(character[9]);
-                resHi.setText(character[19]);
-            } else if (character[5].equals("TBD")) {
-                hpLow.setText(character[5]);
-                atkLow.setText(character[6]);
-                spdLow.setText(character[7]);
-                defLow.setText(character[8]);
-                resLow.setText(character[9]);
-                hpMid.setText(character[10]);
-                atkMid.setText(character[11]);
-                spdMid.setText(character[12]);
-                defMid.setText(character[13]);
-                resMid.setText(character[14]);
-                hpHi.setText(character[15]);
-                atkHi.setText(character[16]);
-                spdHi.setText(character[17]);
-                defHi.setText(character[18]);
-                resHi.setText(character[19]);
-            } else {
-                int diffLow = Integer.parseInt(character[5]) + Integer.parseInt(character[35]);
-                int diff = Integer.parseInt(character[10]) + Integer.parseInt(character[35]);
-                int diffHigh = Integer.parseInt(character[15]) + Integer.parseInt(character[35]);
-                String newValue = String.valueOf(diff);
-                String newValueLow = String.valueOf(diffLow);
-                String newValueHigh = String.valueOf(diffHigh);
+                    diff = Integer.parseInt(character[14]) + Integer.parseInt(character[39]);
+                    newValue = String.valueOf(diff);
+                    resMid.setText(newValue);
+                    resLow.setText(character[9]);
+                    resHi.setText(character[19]);
+                    break;
+                case "TBD":
+                    hpLow.setText(character[5]);
+                    atkLow.setText(character[6]);
+                    spdLow.setText(character[7]);
+                    defLow.setText(character[8]);
+                    resLow.setText(character[9]);
+                    hpMid.setText(character[10]);
+                    atkMid.setText(character[11]);
+                    spdMid.setText(character[12]);
+                    defMid.setText(character[13]);
+                    resMid.setText(character[14]);
+                    hpHi.setText(character[15]);
+                    atkHi.setText(character[16]);
+                    spdHi.setText(character[17]);
+                    defHi.setText(character[18]);
+                    resHi.setText(character[19]);
+                    break;
+                default:
+                    int diffLow = Integer.parseInt(character[5]) + Integer.parseInt(character[35]);
+                    diff = Integer.parseInt(character[10]) + Integer.parseInt(character[35]);
+                    int diffHigh = Integer.parseInt(character[15]) + Integer.parseInt(character[35]);
+                    newValue = String.valueOf(diff);
+                    String newValueLow = String.valueOf(diffLow);
+                    String newValueHigh = String.valueOf(diffHigh);
 
 
-                hpLow.setText(newValueLow);
-                hpMid.setText(newValue);
-                hpHi.setText(newValueHigh);
+                    hpLow.setText(newValueLow);
+                    hpMid.setText(newValue);
+                    hpHi.setText(newValueHigh);
 
-                diffLow = Integer.parseInt(character[6]) + Integer.parseInt(character[36]);
-                diff = Integer.parseInt(character[11]) + Integer.parseInt(character[36]);
-                diffHigh = Integer.parseInt(character[16]) + Integer.parseInt(character[36]);
-                newValue = String.valueOf(diff);
-                newValueLow = String.valueOf(diffLow);
-                newValueHigh = String.valueOf(diffHigh);
+                    diffLow = Integer.parseInt(character[6]) + Integer.parseInt(character[36]);
+                    diff = Integer.parseInt(character[11]) + Integer.parseInt(character[36]);
+                    diffHigh = Integer.parseInt(character[16]) + Integer.parseInt(character[36]);
+                    newValue = String.valueOf(diff);
+                    newValueLow = String.valueOf(diffLow);
+                    newValueHigh = String.valueOf(diffHigh);
 
-                atkLow.setText(newValueLow);
-                atkMid.setText(newValue);
-                atkHi.setText(newValueHigh);
+                    atkLow.setText(newValueLow);
+                    atkMid.setText(newValue);
+                    atkHi.setText(newValueHigh);
 
-                diffLow = Integer.parseInt(character[7]) + Integer.parseInt(character[37]);
-                diff = Integer.parseInt(character[12]) + Integer.parseInt(character[37]);
-                diffHigh = Integer.parseInt(character[17]) + Integer.parseInt(character[37]);
-                newValue = String.valueOf(diff);
-                newValueLow = String.valueOf(diffLow);
-                newValueHigh = String.valueOf(diffHigh);
+                    diffLow = Integer.parseInt(character[7]) + Integer.parseInt(character[37]);
+                    diff = Integer.parseInt(character[12]) + Integer.parseInt(character[37]);
+                    diffHigh = Integer.parseInt(character[17]) + Integer.parseInt(character[37]);
+                    newValue = String.valueOf(diff);
+                    newValueLow = String.valueOf(diffLow);
+                    newValueHigh = String.valueOf(diffHigh);
 
-                spdLow.setText(newValueLow);
-                spdMid.setText(newValue);
-                spdHi.setText(newValueHigh);
+                    spdLow.setText(newValueLow);
+                    spdMid.setText(newValue);
+                    spdHi.setText(newValueHigh);
 
-                diffLow = Integer.parseInt(character[8]) + Integer.parseInt(character[38]);
-                diff = Integer.parseInt(character[13]) + Integer.parseInt(character[38]);
-                diffHigh = Integer.parseInt(character[18]) + Integer.parseInt(character[38]);
-                newValue = String.valueOf(diff);
-                newValueLow = String.valueOf(diffLow);
-                newValueHigh = String.valueOf(diffHigh);
+                    diffLow = Integer.parseInt(character[8]) + Integer.parseInt(character[38]);
+                    diff = Integer.parseInt(character[13]) + Integer.parseInt(character[38]);
+                    diffHigh = Integer.parseInt(character[18]) + Integer.parseInt(character[38]);
+                    newValue = String.valueOf(diff);
+                    newValueLow = String.valueOf(diffLow);
+                    newValueHigh = String.valueOf(diffHigh);
 
-                defLow.setText(newValueLow);
-                defMid.setText(newValue);
-                defHi.setText(newValueHigh);
+                    defLow.setText(newValueLow);
+                    defMid.setText(newValue);
+                    defHi.setText(newValueHigh);
 
-                diffLow = Integer.parseInt(character[9]) + Integer.parseInt(character[39]);
-                diff = Integer.parseInt(character[14]) + Integer.parseInt(character[39]);
-                diffHigh = Integer.parseInt(character[19]) + Integer.parseInt(character[39]);
-                newValue = String.valueOf(diff);
-                newValueLow = String.valueOf(diffLow);
-                newValueHigh = String.valueOf(diffHigh);
+                    diffLow = Integer.parseInt(character[9]) + Integer.parseInt(character[39]);
+                    diff = Integer.parseInt(character[14]) + Integer.parseInt(character[39]);
+                    diffHigh = Integer.parseInt(character[19]) + Integer.parseInt(character[39]);
+                    newValue = String.valueOf(diff);
+                    newValueLow = String.valueOf(diffLow);
+                    newValueHigh = String.valueOf(diffHigh);
 
-                resLow.setText(newValueLow);
-                resMid.setText(newValue);
-                resHi.setText(newValueHigh);
+                    resLow.setText(newValueLow);
+                    resMid.setText(newValue);
+                    resHi.setText(newValueHigh);
+                    break;
             }
         } else { //is equipped and level 40
             //First have to change the values based on weapon equipped 35-39
             //If they have n/a values, then the unit only has mid stats, so don't try to get value
             //of low and hi stats, just set them to n/a
-            if (character[5].equals("n/a")) {
-                int diff = Integer.parseInt(character[25]) + Integer.parseInt(character[35]);
-                String newValue = String.valueOf(diff);
-                hpMid.setText(newValue);
-                hpLow.setText(character[20]);
-                hpHi.setText(character[30]);
+            switch (character[5]) {
+                case "n/a":
+                    diff = Integer.parseInt(character[25]) + Integer.parseInt(character[35]);
+                    newValue = String.valueOf(diff);
+                    hpMid.setText(newValue);
+                    hpLow.setText(character[20]);
+                    hpHi.setText(character[30]);
 
-                diff = Integer.parseInt(character[26]) + Integer.parseInt(character[36]);
-                newValue = String.valueOf(diff);
-                atkMid.setText(newValue);
-                atkLow.setText(character[21]);
-                atkHi.setText(character[31]);
+                    diff = Integer.parseInt(character[26]) + Integer.parseInt(character[36]);
+                    newValue = String.valueOf(diff);
+                    atkMid.setText(newValue);
+                    atkLow.setText(character[21]);
+                    atkHi.setText(character[31]);
 
-                diff = Integer.parseInt(character[27]) + Integer.parseInt(character[37]);
-                newValue = String.valueOf(diff);
-                spdMid.setText(newValue);
-                spdLow.setText(character[22]);
-                spdHi.setText(character[32]);
+                    diff = Integer.parseInt(character[27]) + Integer.parseInt(character[37]);
+                    newValue = String.valueOf(diff);
+                    spdMid.setText(newValue);
+                    spdLow.setText(character[22]);
+                    spdHi.setText(character[32]);
 
-                diff = Integer.parseInt(character[28]) + Integer.parseInt(character[38]);
-                newValue = String.valueOf(diff);
-                defMid.setText(newValue);
-                defLow.setText(character[23]);
-                defHi.setText(character[33]);
+                    diff = Integer.parseInt(character[28]) + Integer.parseInt(character[38]);
+                    newValue = String.valueOf(diff);
+                    defMid.setText(newValue);
+                    defLow.setText(character[23]);
+                    defHi.setText(character[33]);
 
-                diff = Integer.parseInt(character[29]) + Integer.parseInt(character[39]);
-                newValue = String.valueOf(diff);
-                resMid.setText(newValue);
-                resLow.setText(character[24]);
-                resHi.setText(character[34]);
-            } else if (character[5].equals("TBD")) {
-                hpLow.setText(character[20]);
-                atkLow.setText(character[21]);
-                spdLow.setText(character[22]);
-                defLow.setText(character[23]);
-                resLow.setText(character[24]);
-                hpMid.setText(character[25]);
-                atkMid.setText(character[26]);
-                spdMid.setText(character[27]);
-                defMid.setText(character[28]);
-                resMid.setText(character[29]);
-                hpHi.setText(character[30]);
-                atkHi.setText(character[31]);
-                spdHi.setText(character[32]);
-                defHi.setText(character[33]);
-                resHi.setText(character[34]);
-            } else {
-                int diffLow = Integer.parseInt(character[20]) + Integer.parseInt(character[35]);
-                int diff = Integer.parseInt(character[25]) + Integer.parseInt(character[35]);
-                int diffHigh = Integer.parseInt(character[30]) + Integer.parseInt(character[35]);
-                String newValue = String.valueOf(diff);
-                String newValueLow = String.valueOf(diffLow);
-                String newValueHigh = String.valueOf(diffHigh);
+                    diff = Integer.parseInt(character[29]) + Integer.parseInt(character[39]);
+                    newValue = String.valueOf(diff);
+                    resMid.setText(newValue);
+                    resLow.setText(character[24]);
+                    resHi.setText(character[34]);
+                    break;
+                case "TBD":
+                    hpLow.setText(character[20]);
+                    atkLow.setText(character[21]);
+                    spdLow.setText(character[22]);
+                    defLow.setText(character[23]);
+                    resLow.setText(character[24]);
+                    hpMid.setText(character[25]);
+                    atkMid.setText(character[26]);
+                    spdMid.setText(character[27]);
+                    defMid.setText(character[28]);
+                    resMid.setText(character[29]);
+                    hpHi.setText(character[30]);
+                    atkHi.setText(character[31]);
+                    spdHi.setText(character[32]);
+                    defHi.setText(character[33]);
+                    resHi.setText(character[34]);
+                    break;
+                default:
+                    int diffLow = Integer.parseInt(character[20]) + Integer.parseInt(character[35]);
+                    diff = Integer.parseInt(character[25]) + Integer.parseInt(character[35]);
+                    int diffHigh = Integer.parseInt(character[30]) + Integer.parseInt(character[35]);
+                    newValue = String.valueOf(diff);
+                    String newValueLow = String.valueOf(diffLow);
+                    String newValueHigh = String.valueOf(diffHigh);
 
-                hpLow.setText(newValueLow);
-                hpMid.setText(newValue);
-                hpHi.setText(newValueHigh);
+                    hpLow.setText(newValueLow);
+                    hpMid.setText(newValue);
+                    hpHi.setText(newValueHigh);
 
-                diffLow = Integer.parseInt(character[21]) + Integer.parseInt(character[36]);
-                diff = Integer.parseInt(character[26]) + Integer.parseInt(character[36]);
-                diffHigh = Integer.parseInt(character[31]) + Integer.parseInt(character[36]);
-                newValue = String.valueOf(diff);
-                newValueLow = String.valueOf(diffLow);
-                newValueHigh = String.valueOf(diffHigh);
+                    diffLow = Integer.parseInt(character[21]) + Integer.parseInt(character[36]);
+                    diff = Integer.parseInt(character[26]) + Integer.parseInt(character[36]);
+                    diffHigh = Integer.parseInt(character[31]) + Integer.parseInt(character[36]);
+                    newValue = String.valueOf(diff);
+                    newValueLow = String.valueOf(diffLow);
+                    newValueHigh = String.valueOf(diffHigh);
 
-                atkLow.setText(newValueLow);
-                atkMid.setText(newValue);
-                atkHi.setText(newValueHigh);
+                    atkLow.setText(newValueLow);
+                    atkMid.setText(newValue);
+                    atkHi.setText(newValueHigh);
 
-                diffLow = Integer.parseInt(character[22]) + Integer.parseInt(character[37]);
-                diff = Integer.parseInt(character[27]) + Integer.parseInt(character[37]);
-                diffHigh = Integer.parseInt(character[32]) + Integer.parseInt(character[37]);
-                newValue = String.valueOf(diff);
-                newValueLow = String.valueOf(diffLow);
-                newValueHigh = String.valueOf(diffHigh);
+                    diffLow = Integer.parseInt(character[22]) + Integer.parseInt(character[37]);
+                    diff = Integer.parseInt(character[27]) + Integer.parseInt(character[37]);
+                    diffHigh = Integer.parseInt(character[32]) + Integer.parseInt(character[37]);
+                    newValue = String.valueOf(diff);
+                    newValueLow = String.valueOf(diffLow);
+                    newValueHigh = String.valueOf(diffHigh);
 
-                spdLow.setText(newValueLow);
-                spdMid.setText(newValue);
-                spdHi.setText(newValueHigh);
+                    spdLow.setText(newValueLow);
+                    spdMid.setText(newValue);
+                    spdHi.setText(newValueHigh);
 
-                diffLow = Integer.parseInt(character[23]) + Integer.parseInt(character[38]);
-                diff = Integer.parseInt(character[28]) + Integer.parseInt(character[38]);
-                diffHigh = Integer.parseInt(character[33]) + Integer.parseInt(character[38]);
-                newValue = String.valueOf(diff);
-                newValueLow = String.valueOf(diffLow);
-                newValueHigh = String.valueOf(diffHigh);
+                    diffLow = Integer.parseInt(character[23]) + Integer.parseInt(character[38]);
+                    diff = Integer.parseInt(character[28]) + Integer.parseInt(character[38]);
+                    diffHigh = Integer.parseInt(character[33]) + Integer.parseInt(character[38]);
+                    newValue = String.valueOf(diff);
+                    newValueLow = String.valueOf(diffLow);
+                    newValueHigh = String.valueOf(diffHigh);
 
-                defLow.setText(newValueLow);
-                defMid.setText(newValue);
-                defHi.setText(newValueHigh);
+                    defLow.setText(newValueLow);
+                    defMid.setText(newValue);
+                    defHi.setText(newValueHigh);
 
-                diffLow = Integer.parseInt(character[24]) + Integer.parseInt(character[39]);
-                diff = Integer.parseInt(character[29]) + Integer.parseInt(character[39]);
-                diffHigh = Integer.parseInt(character[34]) + Integer.parseInt(character[39]);
-                newValue = String.valueOf(diff);
-                newValueLow = String.valueOf(diffLow);
-                newValueHigh = String.valueOf(diffHigh);
+                    diffLow = Integer.parseInt(character[24]) + Integer.parseInt(character[39]);
+                    diff = Integer.parseInt(character[29]) + Integer.parseInt(character[39]);
+                    diffHigh = Integer.parseInt(character[34]) + Integer.parseInt(character[39]);
+                    newValue = String.valueOf(diff);
+                    newValueLow = String.valueOf(diffLow);
+                    newValueHigh = String.valueOf(diffHigh);
 
-                resLow.setText(newValueLow);
-                resMid.setText(newValue);
-                resHi.setText(newValueHigh);
+                    resLow.setText(newValueLow);
+                    resMid.setText(newValue);
+                    resHi.setText(newValueHigh);
+                    break;
             }
         }
     }
@@ -1095,6 +1119,109 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         spdHi = infoView.findViewById(R.id.spd_high);
         defHi = infoView.findViewById(R.id.def_high);
         resHi = infoView.findViewById(R.id.res_high);
+    }
+
+    private void setColorScheme() {
+        theme = sharedPref.getBoolean(SettingsActivity.KEY_PREF_THEME, false);
+        ImageView brandImage = mFloatingWidgetView.findViewById(R.id.brand_image);
+        ImageView minimizeImage = mFloatingWidgetView.findViewById(R.id.close_expanded_view);
+        TextView nameTextView = mFloatingWidgetView.findViewById(R.id.name);
+        TextView ratingTextView = mFloatingWidgetView.findViewById(R.id.rating);
+        TextView weaponTextView = mFloatingWidgetView.findViewById(R.id.weapon);
+        TextView colorTextView = mFloatingWidgetView.findViewById(R.id.color);
+        RadioButton levelOne = mFloatingWidgetView.findViewById(R.id.radio_one);
+        RadioButton levelForty = mFloatingWidgetView.findViewById(R.id.radio_forty);
+        TextView hpTitle = mFloatingWidgetView.findViewById(R.id.hp_title);
+        TextView spdTitle = mFloatingWidgetView.findViewById(R.id.spd_title);
+        TextView atkTitle = mFloatingWidgetView.findViewById(R.id.atk_title);
+        TextView defTitle = mFloatingWidgetView.findViewById(R.id.def_title);
+        TextView resTitle = mFloatingWidgetView.findViewById(R.id.res_title);
+        TextView lowTitle = mFloatingWidgetView.findViewById(R.id.low_title);
+        TextView medTitle = mFloatingWidgetView.findViewById(R.id.mid_title);
+        TextView highTitle = mFloatingWidgetView.findViewById(R.id.high_title);
+        TextView recTitle = mFloatingWidgetView.findViewById(R.id.recommended_title);
+        ImageView brandImage2 = mFloatingWidgetView.findViewById(R.id.brand_image_info);
+        ImageView backArrowImage = mFloatingWidgetView.findViewById(R.id.close_content_view);
+
+        if(!theme) {
+            //Set all the colors for a light theme
+            expandedView.setBackground(getResources().getDrawable(R.drawable.background));
+            brandImage.setImageDrawable(getResources().getDrawable(R.drawable.black_brand));
+            minimizeImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_minimize));
+            backArrowImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_black_left_arrow));
+            nameTextView.setTextColor(getResources().getColor(R.color.text_color_light));
+            ratingTextView.setTextColor(getResources().getColor(R.color.text_color_light));
+            weaponTextView.setTextColor(getResources().getColor(R.color.text_color_light));
+            colorTextView.setTextColor(getResources().getColor(R.color.text_color_light));
+            levelOne.setTextColor(getResources().getColor(R.color.text_color_light));
+            levelForty.setTextColor(getResources().getColor(R.color.text_color_light));
+
+            infoView.setBackground(getResources().getDrawable(R.drawable.background));
+            characterNameInfo.setTextColor(getResources().getColor(R.color.text_color_light));
+            characterEquippedInfo.setTextColor(getResources().getColor(R.color.text_color_light));
+            characterLevelInfo.setTextColor(getResources().getColor(R.color.text_color_light));
+            //characterRatingInfo.setTextColor(getResources().getColor(R.color.text_color_light));
+            hpTitle.setTextColor(getResources().getColor(R.color.text_color_light));
+            spdTitle.setTextColor(getResources().getColor(R.color.text_color_light));
+            atkTitle.setTextColor(getResources().getColor(R.color.text_color_light));
+            resTitle.setTextColor(getResources().getColor(R.color.text_color_light));
+            defTitle.setTextColor(getResources().getColor(R.color.text_color_light));
+            lowTitle.setTextColor(getResources().getColor(R.color.text_color_light));
+            medTitle.setTextColor(getResources().getColor(R.color.text_color_light));
+            highTitle.setTextColor(getResources().getColor(R.color.text_color_light));
+            hpMid.setTextColor(getResources().getColor(R.color.text_color_light));
+            spdMid.setTextColor(getResources().getColor(R.color.text_color_light));
+            atkMid.setTextColor(getResources().getColor(R.color.text_color_light));
+            resMid.setTextColor(getResources().getColor(R.color.text_color_light));
+            defMid.setTextColor(getResources().getColor(R.color.text_color_light));
+            recTitle.setTextColor(getResources().getColor(R.color.text_color_light));
+            brandImage2.setImageDrawable(getResources().getDrawable(R.drawable.black_brand_2));
+            hpHi.setTextColor(getResources().getColor(R.color.hi_stat));
+            spdHi.setTextColor(getResources().getColor(R.color.hi_stat));
+            atkHi.setTextColor(getResources().getColor(R.color.hi_stat));
+            resHi.setTextColor(getResources().getColor(R.color.hi_stat));
+            defHi.setTextColor(getResources().getColor(R.color.hi_stat));
+        }
+        else {
+            //Set all the colors for a dark theme
+            expandedView.setBackground(getResources().getDrawable(R.drawable.background_dark));
+            brandImage.setImageDrawable(getResources().getDrawable(R.drawable.yellow_brand));
+            brandImage2.setImageDrawable(getResources().getDrawable(R.drawable.yellow_brand_2));
+            backArrowImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_white_left_arrow));
+            minimizeImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_minimize_white));
+            nameTextView.setTextColor(getResources().getColor(R.color.text_color_dark));
+            ratingTextView.setTextColor(getResources().getColor(R.color.text_color_dark));
+            weaponTextView.setTextColor(getResources().getColor(R.color.text_color_dark));
+            colorTextView.setTextColor(getResources().getColor(R.color.text_color_dark));
+            levelOne.setTextColor(getResources().getColor(R.color.text_color_dark));
+            levelForty.setTextColor(getResources().getColor(R.color.text_color_dark));
+
+            infoView.setBackground(getResources().getDrawable(R.drawable.background_dark));
+            characterNameInfo.setTextColor(getResources().getColor(R.color.text_color_dark));
+            characterEquippedInfo.setTextColor(getResources().getColor(R.color.text_color_dark));
+            characterLevelInfo.setTextColor(getResources().getColor(R.color.text_color_dark));
+            //characterRatingInfo.setTextColor(getResources().getColor(R.color.text_color_dark));
+            hpTitle.setTextColor(getResources().getColor(R.color.text_color_dark));
+            spdTitle.setTextColor(getResources().getColor(R.color.text_color_dark));
+            atkTitle.setTextColor(getResources().getColor(R.color.text_color_dark));
+            resTitle.setTextColor(getResources().getColor(R.color.text_color_dark));
+            defTitle.setTextColor(getResources().getColor(R.color.text_color_dark));
+            lowTitle.setTextColor(getResources().getColor(R.color.text_color_dark));
+            medTitle.setTextColor(getResources().getColor(R.color.text_color_dark));
+            highTitle.setTextColor(getResources().getColor(R.color.text_color_dark));
+            hpMid.setTextColor(getResources().getColor(R.color.mid_stat_yellow));
+            spdMid.setTextColor(getResources().getColor(R.color.mid_stat_yellow));
+            atkMid.setTextColor(getResources().getColor(R.color.mid_stat_yellow));
+            resMid.setTextColor(getResources().getColor(R.color.mid_stat_yellow));
+            defMid.setTextColor(getResources().getColor(R.color.mid_stat_yellow));
+            recTitle.setTextColor(getResources().getColor(R.color.text_color_dark));
+            hpHi.setTextColor(getResources().getColor(R.color.hi_stat_dark));
+            spdHi.setTextColor(getResources().getColor(R.color.hi_stat_dark));
+            atkHi.setTextColor(getResources().getColor(R.color.hi_stat_dark));
+            resHi.setTextColor(getResources().getColor(R.color.hi_stat_dark));
+            defHi.setTextColor(getResources().getColor(R.color.hi_stat_dark));
+
+        }
     }
 
 

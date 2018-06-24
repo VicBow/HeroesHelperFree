@@ -8,7 +8,7 @@
         y is for any design change
         z is for content changes, corrections
     -->
-    <string name="last_updated">Last Updated: 11 Jun 2018 \nv1.4.10</string>
+    <string name="last_updated">Last Updated: 24 Jun 2018 \nv2.5.10</string>
 
     <string name="feedback">Submit Feedback</string>
     <string name="title_send_feedback">Send Feedback</string>
@@ -39,6 +39,13 @@
     <string name="feedbackHint">Your Message</string>
     <string name="recommended">Recommended IV\'s:</string>
     <string name="recommended_stat">Recommended IV</string>
+    <string name="settings">Settings</string>
+    <string name="themes">Themes:</string>
+    <string name="light_theme">Light</string>
+    <string name="dark_theme">Dark</string>
+    <string name="theme_title">Enable Dark Mode</string>
+    <string name="theme_summary">Switch to a Dark Theme</string>
+    <string name="action_settings">Settings</string>
 
     <string-array name="rating_stars">
         <item>&#9733; &#9733; &#9733; &#9733; &#9733;</item>

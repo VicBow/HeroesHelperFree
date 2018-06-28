@@ -53,7 +53,7 @@ public class Feedback extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    GMailSender sender = new GMailSender(email, "FEH2018!!");
+                    GMailSender sender = new GMailSender(email, "");
                     sender.sendMail("Feedback from Heroes Helper Free",
                             feedback,
                             email,

@@ -515,6 +515,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
     /*  on Floating widget click show expanded view  */
     private void onFloatingWidgetClick() {
         if (isViewCollapsed()) {
+            setColorScheme();
             //When user clicks on the image view of the collapsed layout,
             //visibility of the collapsed layout will be changed to "View.GONE"
             //and expanded view will become visible.

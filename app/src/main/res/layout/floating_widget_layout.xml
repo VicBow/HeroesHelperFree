@@ -68,7 +68,7 @@
                     android:id="@+id/expanded_table"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight=".85"
+                    android:layout_weight=".9"
                     android:paddingEnd="5dp"
                     android:paddingStart="5dp"
                     android:stretchColumns="1">
@@ -138,7 +138,7 @@
                 <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight=".15"
+                    android:layout_weight=".1"
                     android:orientation="vertical">
 
 

@@ -99,7 +99,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
 
     private AdView mAdView, mAdView2;
     private AdRequest adRequest;
-    Boolean theme;
+    Boolean theme, hand;
     int spinnerNum;
     SharedPreferences sharedPref;
     String transparentNum;
@@ -126,6 +126,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         super.onCreate();
 
         transparentNum = sharedPref.getString(SettingsActivity.KEY_PREF_TRANSPARENT, "1");
+        hand = sharedPref.getBoolean(SettingsActivity.KEY_PREF_HAND, false);
 
         //Set layout width to wrap so the layout can move around
         floatWidth = "wrap";
@@ -256,8 +257,16 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         //Specify the view position
         wrapParams.gravity = Gravity.TOP | Gravity.START;
 
+        int starting_x;
+        Point size = new Point();
+        mWindowManager.getDefaultDisplay().getSize(size);
+        if (hand) //They are right handed
+            starting_x = 0;
+
+        else starting_x = size.x;
+
         //Initially view will be added to top-left corner, you change x-y coordinates according to your need
-        wrapParams.x = 0;
+        wrapParams.x = starting_x;
         wrapParams.y = 800;
 
         //Add the view to the window

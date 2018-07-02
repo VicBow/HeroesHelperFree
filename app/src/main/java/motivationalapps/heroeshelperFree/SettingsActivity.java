@@ -6,6 +6,7 @@ import android.os.Bundle;
 public class SettingsActivity extends AppCompatActivity {
 
     public static final String KEY_PREF_THEME = "theme_switch";
+    public static final String KEY_PREF_TRANSPARENT = "transparent_preference";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

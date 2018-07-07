@@ -289,7 +289,9 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
 
         //find id of the info creation layout
         infoView = mFloatingWidgetView.findViewById(R.id.content_container);
-        if (notification) {
+
+        //TODO: If I can get this crap to work without causing issues
+        /*if (notification) {
             generateNotification(this, "Open the Main Screen", "Tap here to open the main app screen", NOTIFICATION_ID);
             mFloatingWidgetView.findViewById(R.id.close_floating_view).setVisibility(View.GONE);
         }
@@ -297,7 +299,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
             if (notificationManager != null) {
                 notificationManager.cancel(NOTIFICATION_ID);
             }
-        }
+        }*/
         addTextViews();
 
         //Generate ads - Here and in the two spots on Floating widget layout

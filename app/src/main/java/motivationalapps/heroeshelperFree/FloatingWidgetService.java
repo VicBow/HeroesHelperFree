@@ -251,7 +251,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT);
         addFloatingWidgetView(inflater);
-        changeTransparency();
+        //changeTransparency();
         implementClickListeners();
         implementTouchListenerToFloatingWidgetView();
     }

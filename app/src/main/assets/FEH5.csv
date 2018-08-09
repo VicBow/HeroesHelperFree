@@ -253,8 +253,8 @@ Tharja,Tharja,Dark Shadow,Red,Tome,16,7,7,5,4,17,8,8,6,5,18,9,9,7,6,35,29,31,20,
 Tharja (Bride),Tharja,Obsessive Bride,Red,Tome,16,8,8,5,3,17,9,9,6,4,18,10,10,7,5,35,32,32,18,18,39,35,35,21,21,42,38,38,24,24,0,14,3,0,0,1,neutral,boon,boon,bane,bane
 Tharja (Winter),Tharja,"""Normal Girl""",Red,Tome,18,9,4,7,9,19,10,5,8,10,20,11,6,9,11,40,31,14,31,33,43,34,18,34,36,46,37,21,37,39,0,12,0,0,0,1,bane,boon,bane,boon,boon
 Tiki (Adult),Tiki,Naga's Voice,Red,Breath,17,6,5,8,6,18,7,6,9,7,19,8,7,10,8,36,32,20,32,21,40,35,23,35,24,43,38,26,38,27,0,11,0,0,0,1,neutral,boon,bane,boon,boon
-Tiki (Summer),Tiki,Summering Scion,Green,Axe,17,7,5,7,6,18,8,6,8,7,19,9,7,9,8,32,33,27,29,21,35,36,30,32,24,38,39,33,35,27,0,14,0,0,0,1,bane,boon,neutral,neutral,neutral
-Tiki (Summer),Tiki,Beachside Scion,Red,Breath,15,6,3,7,3,16,7,4,8,4,17,8,5,9,5,37,30,33,29,22,40,33,37,32,26,43,36,40,35,29,0,16,0,3,0,1,bane,boon,boon,boon,boon
+Tiki (Summer-Adult),Tiki,Summering Scion,Green,Axe,17,7,5,7,6,18,8,6,8,7,19,9,7,9,8,32,33,27,29,21,35,36,30,32,24,38,39,33,35,27,0,14,0,0,0,1,bane,boon,neutral,neutral,neutral
+Tiki (Summer-Young),Tiki,Beachside Scion,Red,Breath,15,6,3,7,3,16,7,4,8,4,17,8,5,9,5,37,30,33,29,22,40,33,37,32,26,43,36,40,35,29,0,16,0,3,0,1,bane,boon,boon,boon,boon
 Tiki (Young),Tiki,Dragon Scion,Red,Breath,14,4,3,7,6,15,5,4,8,7,16,6,5,9,8,38,28,27,29,25,41,31,30,32,29,44,34,33,35,32,0,15,0,0,0,1,bane,neutral,boon,boon,neutral
 Titania,Titania,Mighty Mercenary,Green,Axe,17,5,7,5,7,18,6,8,6,8,19,7,9,7,9,34,24,31,22,26,37,28,34,25,30,41,31,37,29,33,0,12,0,0,0,1,neutral,boon,boon,bane,boon
 Tobin,Tobin,The Clueless One,Red,Sword,n/a,n/a,n/a,n/a,n/a,18,7,5,5,4,n/a,n/a,n/a,n/a,n/a,n/a,n/a,n/a,n/a,n/a,46,31,27,33,26,n/a,n/a,n/a,n/a,n/a,0,12,0,0,0,1,neutral,neutral,neutral,neutral,neutral

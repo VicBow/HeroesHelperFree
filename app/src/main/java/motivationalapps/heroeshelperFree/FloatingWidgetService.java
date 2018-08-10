@@ -1,6 +1,7 @@
 package motivationalapps.heroeshelperFree;
 
 import android.annotation.TargetApi;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -15,6 +16,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.preference.PreferenceManager;
 import android.view.Gravity;
@@ -103,11 +105,12 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
 
     private AdView mAdView, mAdView2;
     private AdRequest adRequest;
-    Boolean theme, hand, notification;
+    Boolean theme, hand;
     int spinnerNum;
     SharedPreferences sharedPref;
     String transparentNum;
-    private static NotificationManager notificationManager;
+    private static NotificationManagerCompat notificationManager;
+    private static String CHANNEL_ID = "persNotification";
     public static int NOTIFICATION_ID = 1775;
     public static FloatingWidgetService floatService;
 
@@ -135,7 +138,9 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
 
         transparentNum = sharedPref.getString(SettingsActivity.KEY_PREF_TRANSPARENT, "1");
         hand = sharedPref.getBoolean(SettingsActivity.KEY_PREF_HAND, false);
-        notification = sharedPref.getBoolean(SettingsActivity.KEY_PREF_NOTIFICATION, true);
+
+        //A required item for newer Android versions
+        createNotificationChannel();
 
         //Set layout width to wrap so the layout can move around
         floatWidth = "wrap";
@@ -290,16 +295,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         //find id of the info creation layout
         infoView = mFloatingWidgetView.findViewById(R.id.content_container);
 
-        //TODO: If I can get this crap to work without causing issues
-        /*if (notification) {
-            generateNotification(this, "Open the Main Screen", "Tap here to open the main app screen", NOTIFICATION_ID);
-            mFloatingWidgetView.findViewById(R.id.close_floating_view).setVisibility(View.GONE);
-        }
-        else {
-            if (notificationManager != null) {
-                notificationManager.cancel(NOTIFICATION_ID);
-            }
-        }*/
+        generateNotification(this, "Open the Main Screen", "Tap here to open the main app screen", NOTIFICATION_ID);
         addTextViews();
 
         //Generate ads - Here and in the two spots on Floating widget layout
@@ -459,7 +455,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
     }
 
     private void implementClickListeners() {
-        mFloatingWidgetView.findViewById(R.id.close_floating_view).setOnClickListener(this);
+        //mFloatingWidgetView.findViewById(R.id.close_floating_view).setOnClickListener(this);
         mFloatingWidgetView.findViewById(R.id.close_expanded_view).setOnClickListener(this);
         //mFloatingWidgetView.findViewById(R.id.open_activity_button).setOnClickListener(this);
         mFloatingWidgetView.findViewById(R.id.info_button).setOnClickListener(this);
@@ -470,10 +466,6 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.close_floating_view:
-                //close the service and remove the from from the window
-                stopSelf();
-                break;
             case R.id.close_expanded_view:
                 collapsedView.setVisibility(View.VISIBLE);
                 expandedView.setVisibility(View.GONE);
@@ -1265,29 +1257,55 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
     public static void generateNotification(Context context, String title, String message, int notificationId) {
         int icon = R.drawable.icon;
         Intent closeIntent = new Intent(context, ActionReceiver.class);
-        closeIntent.putExtra("close", "closeIcon");
+        Intent openIntent = new Intent(context, ActionReceiver.class);
+        closeIntent.putExtra("icon", "closeIcon");
+        openIntent.putExtra("icon", "openIcon");
 
         PendingIntent pCloseIcon = PendingIntent.getBroadcast(context,1,closeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
+        PendingIntent pOpenIcon = PendingIntent.getBroadcast(context, 2, openIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         //get instance of notification manager
-        notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
+        //notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(icon)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .addAction(R.drawable.ic_close_black_24dp, "Close Icon", pCloseIcon);
+                .addAction(R.drawable.ic_close_black_24dp, "Close Icon", pCloseIcon)
+                .addAction(R.drawable.ic_swords, "Open Icon", pOpenIcon);
 
         Intent notificationIntent = new Intent(context, MainActivity.class);
         PendingIntent intent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
         mBuilder.setContentIntent(intent);
+        notificationManager = NotificationManagerCompat.from(context);
         notificationManager.notify(notificationId, mBuilder.build());
+        //notificationManager.notify(notificationId, mBuilder.build());
     }
 
-    public static void closeItem(String item) {
-        if (item.equals("icon"))
-            floatService.stopSelf();
+    public static void closeItem() {
+        floatService.mFloatingWidgetView.findViewById(R.id.collapse_view).setVisibility(View.INVISIBLE);
+        //floatService.mFloatingWidgetView.findViewById(R.id.expanded_container).setVisibility(View.GONE);
+        //floatService.mFloatingWidgetView.findViewById(R.id.content_container).setVisibility(View.GONE);
+        //floatService.mFloatingWidgetView.findViewById(R.id.build_container).setVisibility(View.GONE);
+        //floatService.stopSelf();
+    }
+
+    public static void openItem() {
+        floatService.mFloatingWidgetView.findViewById(R.id.collapse_view).setVisibility(View.VISIBLE);
+    }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
 
@@ -1301,5 +1319,15 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
             mWindowManager.removeView(mFloatingWidgetView);
     }
 
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+        stopSelf();
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(NOTIFICATION_ID);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            notificationManager.deleteNotificationChannel(CHANNEL_ID);
+        mWindowManager.removeView(mFloatingWidgetView);
 
+    }
 }

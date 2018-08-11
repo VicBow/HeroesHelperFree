@@ -92,6 +92,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void devPage(View view) {
+        Intent intent = new Intent(getBaseContext(), DevNotes.class);
+        startActivity(intent);
+    }
+
     public void removeAds(View view) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         Uri.Builder uriBuilder = Uri.parse("market://details").buildUpon().appendQueryParameter("id", "motivationalapps.heroeshelperPaid").appendQueryParameter("launch", "true");

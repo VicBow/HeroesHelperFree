@@ -28,6 +28,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.RadioButton;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -106,7 +107,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
 
     private AdView mAdView, mAdView2;
     private AdRequest adRequest;
-    Boolean theme, hand; //Theme is true for dark theme and hand is true for left hand
+    Boolean theme, hand, iconX; //Theme is true for dark theme and hand is true for left hand
     int spinnerNum;
     SharedPreferences sharedPref;
     String transparentNum, iconPreference;
@@ -114,6 +115,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
     private static String CHANNEL_ID = "persNotification";
     public static int NOTIFICATION_ID = 1775;
     public static FloatingWidgetService floatService;
+    private Boolean gotExpanded;
 
     //Variable to check if the Floating widget view is on left side or in right side
     // initially we are displaying Floating widget view to Left side so set it to true
@@ -140,6 +142,8 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         iconPreference = sharedPref.getString(SettingsActivity.KEY_PREF_ICON_SIZE, "Large");
         transparentNum = sharedPref.getString(SettingsActivity.KEY_PREF_TRANSPARENT, "1");
         hand = sharedPref.getBoolean(SettingsActivity.KEY_PREF_HAND, false);
+
+        iconX = sharedPref.getBoolean(SettingsActivity.KEY_PREF_CLOSE_ICON, false);
 
         //A required item for newer Android versions
         createNotificationChannel();
@@ -297,6 +301,11 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
 
         //find id of the info creation layout
         infoView = mFloatingWidgetView.findViewById(R.id.content_container);
+
+        if (iconX)
+            mFloatingWidgetView.findViewById(R.id.close_floating_view).setVisibility(View.VISIBLE);
+        else
+            mFloatingWidgetView.findViewById(R.id.close_floating_view).setVisibility(View.GONE);
 
         generateNotification(this, "Open the Main Screen", "Tap here to open the main app screen", NOTIFICATION_ID);
         addTextViews();
@@ -458,7 +467,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
     }
 
     private void implementClickListeners() {
-        //mFloatingWidgetView.findViewById(R.id.close_floating_view).setOnClickListener(this);
+        mFloatingWidgetView.findViewById(R.id.close_floating_view).setOnClickListener(this);
         mFloatingWidgetView.findViewById(R.id.close_expanded_view).setOnClickListener(this);
         //mFloatingWidgetView.findViewById(R.id.open_activity_button).setOnClickListener(this);
         mFloatingWidgetView.findViewById(R.id.info_button).setOnClickListener(this);
@@ -473,7 +482,11 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
                 collapsedView.setVisibility(View.VISIBLE);
                 expandedView.setVisibility(View.GONE);
                 mWindowManager.updateViewLayout(mFloatingWidgetView, wrapParams);
+                gotExpanded = true;
                 updateIconSize();
+                break;
+            case R.id.close_floating_view:
+                stopSelf();
                 break;
             /*case R.id.open_activity_button:
                 //open the activity and stop service
@@ -548,6 +561,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
             //and expanded view will become visible.
             collapsedView.setVisibility(View.GONE);
             expandedView.setVisibility(View.VISIBLE);
+            gotExpanded = true;
             mWindowManager.updateViewLayout(mFloatingWidgetView, matchParams);
             fillSpinners();
         }
@@ -718,6 +732,10 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
                         break;
                 }
                 colorPos = colorSpinner.getSelectedItemPosition();
+                if (!gotExpanded) {
+                    heroPos = 0;
+                }
+                gotExpanded = false;
                 changeHeroAdapter();
             }
 
@@ -757,35 +775,6 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
             case "red":
                 heroAdapter = new ArrayAdapter<>(this, spinnerNum, fiveStarRedList);
         }
-        /*} else if (rating == 4) {
-            switch (color) {
-                case "blue":
-                    heroAdapter = new ArrayAdapter<>(this, spinnerNum, fourStarBlueList);
-                    break;
-                case "colorless":
-                    heroAdapter = new ArrayAdapter<>(this, spinnerNum, fourStarColorlessList);
-                    break;
-                case "green":
-                    heroAdapter = new ArrayAdapter<>(this, spinnerNum, fourStarGreenList);
-                    break;
-                case "red":
-                    heroAdapter = new ArrayAdapter<>(this, spinnerNum, fourStarRedList);
-            }
-        } else {
-            switch (color) {
-                case "blue":
-                    heroAdapter = new ArrayAdapter<>(this, spinnerNum, threeStarBlueList);
-                    break;
-                case "colorless":
-                    heroAdapter = new ArrayAdapter<>(this, spinnerNum, threeStarColorlessList);
-                    break;
-                case "green":
-                    heroAdapter = new ArrayAdapter<>(this, spinnerNum, threeStarGreenList);
-                    break;
-                case "red":
-                    heroAdapter = new ArrayAdapter<>(this, spinnerNum, threeStarRedList);
-            }
-        }*/
         heroSpinner.setAdapter(heroAdapter);
         heroSpinner.setSelection(heroPos);
     }
@@ -1338,20 +1327,32 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
     private void updateIconSize() {
         iconPreference = sharedPref.getString("icon_size", "Large");
         ImageView icon = mFloatingWidgetView.findViewById(R.id.collapsed_iv);
+        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         switch (iconPreference) {
             case "Large":
                 icon.getLayoutParams().height = (int) getResources().getDimension(R.dimen.large_size);
                 icon.getLayoutParams().width = (int) getResources().getDimension(R.dimen.large_size);
+                lp.setMarginStart((int) getResources().getDimension(R.dimen.large_icon_size));
                 break;
             case "Medium":
                 icon.getLayoutParams().height = (int) getResources().getDimension(R.dimen.medium_size);
                 icon.getLayoutParams().width = (int) getResources().getDimension(R.dimen.medium_size);
+                lp.setMarginStart((int) getResources().getDimension(R.dimen.medium_icon_size));
                 break;
             case "Small":
                 icon.getLayoutParams().height = (int) getResources().getDimension(R.dimen.small_size);
                 icon.getLayoutParams().width = (int) getResources().getDimension(R.dimen.small_size);
+                lp.setMarginStart((int) getResources().getDimension(R.dimen.small_icon_size));
                 break;
         }
+
+        iconX = sharedPref.getBoolean(SettingsActivity.KEY_PREF_CLOSE_ICON, false);
+        if (iconX) {
+            mFloatingWidgetView.findViewById(R.id.close_floating_view).setVisibility(View.VISIBLE);
+            mFloatingWidgetView.findViewById(R.id.close_floating_view).setLayoutParams(lp);
+        }
+        else
+            mFloatingWidgetView.findViewById(R.id.close_floating_view).setVisibility(View.GONE);
     }
 
     private void updateSpinners() {
